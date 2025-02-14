@@ -21,7 +21,7 @@ const darkTheme = createTheme({
   },
 })
 
-export default function Layout() {
+export default function Dairy() {
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />

@@ -17,13 +17,25 @@ import {
   Paper,
   Modal,
 } from "@mui/material"
-import { Label, CheckCircle, Delete } from "@mui/icons-material"
+import { Label, CheckCircle, Delete, Description } from "@mui/icons-material"
 
 const DRAWER_WIDTH = 240
 
 export function Sidebar() {
   const [showForm, setShowForm] = useState(false)
+  const [description, setDescription] = useState('')
+  const [title, setTitle] = useState('')
+  function handleDescriptionChange(e){
+    setDescription(e.target.value)
+  }
+  function handleTitleChange(e){
+    setTitle(e.target.value)
+  }
 
+  function savePage(){
+
+  }
+  
   return (
     <Box sx={{ display: "flex" }}>
       <Drawer
@@ -139,8 +151,9 @@ export function Sidebar() {
             position: "absolute",
             top: "50%",
             left: "50%",
+            height:'80vh',
             transform: "translate(-50%, -50%)",
-            width: 400,
+            width: '80vw',
             bgcolor: "background.paper",
             boxShadow: 24,
             p: 4,
@@ -153,10 +166,10 @@ export function Sidebar() {
           <Typography variant="h5" gutterBottom>
             Create New Page
           </Typography>
-          <TextField label="What's on your mind?" fullWidth margin="normal" />
-          <TextField label="Go on, tell me everything!" fullWidth multiline rows={4} margin="normal" />
+          <TextField label="What's on your mind?" value={title} onChange ={(e)=> handleTitleChange(e)}fullWidth margin="normal" />
+          <TextField label="Go on, tell me everything!" fullWidth multiline rows={8} margin="normal" value={description} onChange = {(e)=>handleDescriptionChange(e)}/>
           <Box sx={{ mt: 2, display: "flex", justifyContent: "space-between" }}>
-            <Button variant="contained" color="primary">
+            <Button variant="contained" color="primary" onClick={savePage}>
               Save
             </Button>
             <Button variant="outlined" color="secondary" onClick={() => setShowForm(false)}>

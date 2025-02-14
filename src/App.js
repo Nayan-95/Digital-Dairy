@@ -1,10 +1,10 @@
 
-import Layout from './Pages/layout.jsx';
+import Dairy from './Pages/dairy.jsx';
 
 function App() {
   return (
     <div className="App">
-      <Layout/>
+      <Dairy/>
     </div>
   );
 }
