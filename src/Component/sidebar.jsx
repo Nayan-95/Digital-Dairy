@@ -1,4 +1,4 @@
-"use client"
+import axios from 'axios';
 
 import { useState } from "react"
 import {
@@ -21,37 +21,76 @@ import { Label, CheckCircle, Delete, Description } from "@mui/icons-material"
 
 const DRAWER_WIDTH = 240
 
+
+function savePage() {
+
+}
+
 export function Sidebar() {
   const [showForm, setShowForm] = useState(false)
   const [description, setDescription] = useState('')
   const [title, setTitle] = useState('')
-  function handleDescriptionChange(e){
+
+  function handleDescriptionChange(e) {
     setDescription(e.target.value)
   }
-  function handleTitleChange(e){
+  function handleTitleChange(e) {
     setTitle(e.target.value)
   }
 
-  function savePage(){
+  async function savePage() {
+    if (!title || !description) {
+      alert("Title and description cannot be empty.");
+      return;
+    }
 
+    const newPage = {
+      id: Date.now(), // Generating a unique ID (You can replace this with a backend-generated ID)
+      date: new Date().toLocaleString("en-US", {
+        month: "long", day: "numeric", year: "numeric",
+        hour: "numeric", minute: "numeric", hour12: true
+      }), 
+      title,
+      description,
+      teamMembers: [], 
+    };
+
+    try {
+      const response = await axios.post("http://localhost:8080/addPage", newPage);
+
+      if (response.data.success) {
+        alert("Page saved successfully!");
+        setShowForm(false);
+        setTitle("");
+        setDescription("");
+      } else {
+        alert(`Error: ${response.data.message}`);
+      }
+    } catch (error) {
+      console.error("Error saving page:", error);
+      alert("Failed to save the page. Please try again.");
+    }
   }
-  
+
+
+
+
   return (
     <Box sx={{ display: "flex" }}>
       <Drawer
         variant="permanent"
         sx={{
           width: {
-            xs: 200, 
-            sm: 240, 
-            md: 240, 
+            xs: 200,
+            sm: 240,
+            md: 240,
           },
           flexShrink: 0,
           "& .MuiDrawer-paper": {
             width: {
-              xs: 200, 
-              sm: 240, 
-              md: 240, 
+              xs: 200,
+              sm: 240,
+              md: 240,
             },
             boxSizing: "border-box",
             backgroundColor: "background.paper",
@@ -151,7 +190,7 @@ export function Sidebar() {
             position: "absolute",
             top: "50%",
             left: "50%",
-            height:'80vh',
+            height: '80vh',
             transform: "translate(-50%, -50%)",
             width: '80vw',
             bgcolor: "background.paper",
@@ -166,8 +205,8 @@ export function Sidebar() {
           <Typography variant="h5" gutterBottom>
             Create New Page
           </Typography>
-          <TextField label="What's on your mind?" value={title} onChange ={(e)=> handleTitleChange(e)}fullWidth margin="normal" />
-          <TextField label="Go on, tell me everything!" fullWidth multiline rows={8} margin="normal" value={description} onChange = {(e)=>handleDescriptionChange(e)}/>
+          <TextField label="What's on your mind?" value={title} onChange={(e) => handleTitleChange(e)} fullWidth margin="normal" />
+          <TextField label="Go on, tell me everything!" fullWidth multiline rows={8} margin="normal" value={description} onChange={(e) => handleDescriptionChange(e)} />
           <Box sx={{ mt: 2, display: "flex", justifyContent: "space-between" }}>
             <Button variant="contained" color="primary" onClick={savePage}>
               Save

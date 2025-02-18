@@ -1,5 +1,3 @@
-"use client"
-
 import { AppBar, Badge, Box, IconButton, InputAdornment, TextField, Toolbar, Avatar } from "@mui/material"
 import { Search, NotificationsOutlined, HelpOutline } from "@mui/icons-material"
 
