@@ -1,4 +1,5 @@
-"use client"
+import axios from 'axios'
+import { useNavigate } from "react-router-dom";
 
 import { useState } from "react"
 import {
@@ -16,6 +17,7 @@ import {
   ThemeProvider,
   createTheme,
   CssBaseline,
+  Grid2,
 } from "@mui/material"
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined"
 import PersonAddIcon from "@mui/icons-material/PersonAdd"
@@ -79,8 +81,8 @@ const LoginPage = () => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [alert, setAlert] = useState({ open: false, message: "", severity: "info" })
-  
-  console.log(username, email, password);
+
+  const navigate = useNavigate();
   
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -98,39 +100,72 @@ const LoginPage = () => {
       })
     }
   }
-
+  function resetForm() {
+    setEmail("");
+    setUsername("");
+    setPassword("");
+  }
   const loginUser = async (credentials) => {
-    // Simulating API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    setAlert({
-      open: true,
-      message: "Login successful!",
-      severity: "success",
-    })
+    try {
+      const response = await fetch("http://localhost:8080/userLogin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(credentials),
+      })
+
+      const data = await response.json()
+      //console.log(data);
+      if (!response.ok) throw new Error(data.message || "Login failed")
+      if (data.token) {
+        localStorage.setItem("authToken", data.token);
+      }
+      setAlert({
+        open: true,
+        message: "Login successful!",
+        severity: "success",
+      })
+      resetForm();
+      navigate("/dairy");
+    } catch (error) {
+      setAlert({
+        open: true,
+        message: error.message,
+        severity: "error",
+      })
+    }
   }
 
   const signupUser = async (userData) => {
-    // Simulating API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    setAlert({
-      open: true,
-      message: "Account created successfully! Please log in.",
-      severity: "success",
-    })
-    setIsLogin(true)
-    resetForm()
+    try {
+      const response = await fetch("http://localhost:8080/addUser", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      })
+
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.message || "Signup failed")
+
+      setAlert({
+        open: true,
+        message: "Account created successfully! Please log in.",
+        severity: "success",
+      })
+      setIsLogin(true)
+      resetForm()
+    } catch (error) {
+      setAlert({
+        open: true,
+        message: error.message,
+        severity: "error",
+      })
+    }
   }
 
-  const resetForm = () => {
-    setUsername("")
-    setEmail("")
-    setPassword("")
-  }
-
-  const toggleMode = () => {
-    setIsLogin(!isLogin)
-    resetForm()
-  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -222,8 +257,8 @@ const LoginPage = () => {
                 <Link
                   component={motion.button}
                   variant="body2"
-                  onClick={toggleMode}
-                  sx={{ color: "primary.main", cursor: "pointer", backgroundColor:"secondary.main" }}
+                  onClick={() => { setIsLogin(false) }}
+                  sx={{ color: "primary.main", cursor: "pointer", backgroundColor: "secondary.main" }}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
