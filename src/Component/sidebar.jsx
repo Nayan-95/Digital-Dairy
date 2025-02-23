@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   Box,
   Drawer,
@@ -18,18 +18,16 @@ import {
   Modal,
 } from "@mui/material"
 import { Label, CheckCircle, Delete, Description } from "@mui/icons-material"
+import Notification from './notification.jsx'
 
 const DRAWER_WIDTH = 240
 
-
-function savePage() {
-
-}
 
 export function Sidebar() {
   const [showForm, setShowForm] = useState(false)
   const [description, setDescription] = useState('')
   const [title, setTitle] = useState('')
+  const [notificationMsg, setNotificationMsg] = useState("")
 
   function handleDescriptionChange(e) {
     setDescription(e.target.value)
@@ -43,36 +41,44 @@ export function Sidebar() {
       alert("Title and description cannot be empty.");
       return;
     }
-
+  
     const newPage = {
-      id: Date.now(), // Generating a unique ID (You can replace this with a backend-generated ID)
-      date: new Date().toLocaleString("en-US", {
-        month: "long", day: "numeric", year: "numeric",
-        hour: "numeric", minute: "numeric", hour12: true
-      }), 
       title,
       description,
-      teamMembers: [], 
     };
-
+    const token = localStorage.getItem("token");
     try {
-      const response = await axios.post("http://localhost:8080/addPage", newPage);
-
-      if (response.data.success) {
-        alert("Page saved successfully!");
+      const response = await axios.post("http://localhost:8080/addPage", newPage, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      if (response.status === 200) {
+        setNotificationMsg("Page saved successfully!");
         setShowForm(false);
         setTitle("");
         setDescription("");
       } else {
-        alert(`Error: ${response.data.message}`);
+        setNotificationMsg(response.data.message);
       }
     } catch (error) {
       console.error("Error saving page:", error);
-      alert("Failed to save the page. Please try again.");
+      setNotificationMsg("Failed to save the page. Please try again.");
     }
   }
+  
 
 
+  useEffect(() => {
+    if (notificationMsg) {
+      const timer = setTimeout(() => {
+        setNotificationMsg("");
+      }, 2000); // Clears message after 2 seconds
+  
+      return () => clearTimeout(timer); // Cleanup timeout on component unmount
+    }
+  }, [notificationMsg]);
 
 
   return (
@@ -217,6 +223,7 @@ export function Sidebar() {
           </Box>
         </Box>
       </Modal>
+      {notificationMsg && <Notification msg={notificationMsg} />}
     </Box>
   )
 }

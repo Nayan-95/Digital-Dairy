@@ -119,7 +119,7 @@ const LoginPage = () => {
       //console.log(data);
       if (!response.ok) throw new Error(data.message || "Login failed")
       if (data.token) {
-        localStorage.setItem("authToken", data.token);
+        localStorage.setItem("token", data.token);
       }
       setAlert({
         open: true,
@@ -257,7 +257,7 @@ const LoginPage = () => {
                 <Link
                   component={motion.button}
                   variant="body2"
-                  onClick={() => { setIsLogin(false) }}
+                  onClick={() => { setIsLogin(!isLogin) }}
                   sx={{ color: "primary.main", cursor: "pointer", backgroundColor: "secondary.main" }}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}

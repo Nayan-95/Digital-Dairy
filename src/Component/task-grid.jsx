@@ -1,16 +1,15 @@
 import { useState, useEffect } from "react";
-import { Box, Grid, Typography, Select, MenuItem, InputAdornment, TextField } from "@mui/material";
-import { Search } from "@mui/icons-material";
+import { Box, Grid, Typography, Select, MenuItem, InputAdornment, TextField, Slide, IconButton } from "@mui/material";
+import { Search, Close } from "@mui/icons-material";
 import { TaskCard } from "./task-card";
-
-
+import axios from 'axios'
 
 const INITIAL_TASKS = [
   {
     id: 1,
     date: "January 24th, 2021 04:25 PM",
     title: "Fix login form UI bugs",
-    description: "Fix the alignment issues and responsiveness of the login form.",
+    description: "Fix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the loginFix the alignment issues and responsiveness of the login form.",
     teamMembers: [{ avatar: "/placeholder1.svg" }, { avatar: "/placeholder2.svg" }, { avatar: "/placeholder3.svg" }],
   },
   {
@@ -78,67 +77,105 @@ const INITIAL_TASKS = [
   }
 ];
 
+
+
 export function TaskGrid() {
   const [tasks, setTasks] = useState(INITIAL_TASKS);
-  const [filterText, setFilterText] = useState('')
+  const [filterText, setFilterText] = useState("");
+  const [selectedTask, setSelectedTask] = useState(null);
+  
 
-  useEffect(() => {
-    if (filterText) {
-      setTasks(
-        INITIAL_TASKS.filter((task) =>
-          task.title.toLowerCase().includes(filterText.toLowerCase())
-        )
-      );
+  const filterTasks = (e) => {
+    setFilterText(e.target.value);
+    if (e.target.value) {
+      setTasks(INITIAL_TASKS.filter((task) => task.title.toLowerCase().includes(e.target.value.toLowerCase())));
     } else {
       setTasks(INITIAL_TASKS);
     }
-  }, [filterText]);
-  
+  };
 
-function filterTaks(e) {
-  setFilterText(e.target.value)
-}
+  const handleDelete = (taskId) => {
+    setTasks(tasks.filter((task) => task.id !== taskId));
+  };
 
-const handleDelete = (taskId) => {
-  setTasks(tasks.filter((task) => task.id !== taskId));
-};
+  const handleTaskClick = (taskId) => {
+    const task = tasks.find((t) => t.id === taskId);
+    setSelectedTask(task);
+  };
 
-return (
-  <Box>
-    <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
-      <Typography variant="h6">Your Brain Content</Typography>
-      <TextField
-        placeholder="Search here..."
-        variant="outlined"
-        size="small"
-        onChange={(e) => filterTaks(e)}
-        sx={{
-          ml: "auto",
-          width: 400,
-          "& .MuiOutlinedInput-root": {
-            backgroundColor: "background.default",
-          },
-        }}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <Search />
-            </InputAdornment>
-          ),
-        }}
-      />
-      <Select size="small" value="newest" sx={{ width: 120 }}>
-        <MenuItem value="newest">Newest</MenuItem>
-        <MenuItem value="oldest">Oldest</MenuItem>
-      </Select>
+  const handleCloseDetail = () => {
+    setSelectedTask(null);
+  };
+
+  return (
+    <Box>
+      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
+        <Typography variant="h6">Your Brain Content</Typography>
+        <TextField
+          placeholder="Search here..."
+          variant="outlined"
+          size="small"
+          onChange={filterTasks}
+          sx={{ ml: "auto", width: 400 }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Search />
+              </InputAdornment>
+            ),
+          }}
+        />
+        <Select size="small" value="newest" sx={{ width: 120 }}>
+          <MenuItem value="newest">Newest</MenuItem>
+          <MenuItem value="oldest">Oldest</MenuItem>
+        </Select>
+      </Box>
+
+      {/* Task Grid */}
+      <Grid container spacing={2} sx={{ display: selectedTask ? "none" : "flex" }}>
+        {tasks.map((task) => (
+          <Grid item xs={12} sm={6} md={4} lg={3} key={task.id}>
+            <TaskCard {...task} onDelete={handleDelete} onClick={handleTaskClick} />
+          </Grid>
+        ))}
+      </Grid>
+
+      {/* Full-Screen Task Detail View */}
+      <Slide direction="left" in={!!selectedTask} mountOnEnter unmountOnExit timeout={1000}>
+        <Box
+          sx={{
+            position: "relative",
+            top: 0,
+            left: 0,
+            // width: "100vw",
+            // height: "100vh",
+            bgcolor: "background.paper",
+            p: 4,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          {selectedTask && (
+            <>
+              <IconButton onClick={handleCloseDetail}>
+                <Close />
+              </IconButton>
+              <Typography variant="h5" gutterBottom>
+                {selectedTask.title}
+              </Typography>
+              <Typography variant="subtitle1" color="textSecondary">
+                {selectedTask.date}
+              </Typography>
+              <Typography variant="body1" sx={{ mt: 2, maxWidth: "80%", textAlign: "center" }}>
+                {selectedTask.description}
+                <p>nayan</p>
+              </Typography>
+            </>
+          )}
+        </Box>
+      </Slide>
     </Box>
-    <Grid container spacing={2}>
-      {tasks.map((task) => (
-        <Grid item xs={12} sm={6} md={4} lg={3} key={task.id}>
-          <TaskCard {...task} onDelete={handleDelete} />
-        </Grid>
-      ))}
-    </Grid>
-  </Box>
-);
+  );
 }
